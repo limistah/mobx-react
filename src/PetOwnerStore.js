@@ -1,4 +1,11 @@
-import { action, computed, makeObservable, observable, autorun } from "mobx";
+import {
+  action,
+  computed,
+  makeObservable,
+  observable,
+  autorun,
+  runInAction,
+} from "mobx";
 
 class PetOwnerStore {
   pets = [];
@@ -21,6 +28,7 @@ class PetOwnerStore {
       assignOwnerToPet: action,
     });
     autorun(this.logStoreDetails);
+    runInAction(this.prefetchData);
   }
 
   // total number owners
@@ -110,6 +118,29 @@ class PetOwnerStore {
 
   logStoreDetails = () => {
     console.log(this.storeDetails);
+  };
+
+  prefetchData = () => {
+    const owners = [{ firstName: "Aleem", lastName: "Isiaka", id: 1 }];
+    const pets = [
+      {
+        id: 1,
+        name: "Lincy",
+        breed: "Siamese",
+        type: "Cat",
+        ownerId: 1,
+      },
+    ];
+
+    setTimeout(() => {
+      console.log("Fetch complete update store");
+      owners.map((pet) => this.createOwner(pet));
+      pets.map((pet) => {
+        this.createPet(pet);
+        this.assignOwnerToPet(pet.ownerId, pet.id);
+        return pet;
+      });
+    }, 3000);
   };
 }
 
